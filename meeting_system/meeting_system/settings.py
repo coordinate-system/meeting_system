@@ -107,3 +107,7 @@ USE_TZ = True
 
 # 静态文件 URL（CSS/JS/图片）
 STATIC_URL = "static/"
+
+# 媒体文件 URL（上传的图片等）
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
