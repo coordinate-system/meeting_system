@@ -1,11 +1,27 @@
 import axios from 'axios'
 
 const request = axios.create({
-  baseURL: 'http://localhost:8000', // Django 默认端口
+  baseURL: 'http://localhost:8000',
   timeout: 5000
 })
 
-// 响应拦截：统一处理后端约定格式
+/**
+ * 请求拦截器：自动携带 JWT
+ */
+request.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  error => Promise.reject(error)
+)
+
+/**
+ * 响应拦截：统一处理后端约定格式
+ */
 request.interceptors.response.use(
   response => {
     const res = response.data
@@ -15,7 +31,7 @@ request.interceptors.response.use(
       return Promise.reject(res)
     }
 
-    // 只把 data 给页面
+    // 保留你原来的设计：只把 data 给页面
     return res.data
   },
   error => {

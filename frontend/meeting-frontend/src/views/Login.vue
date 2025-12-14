@@ -31,14 +31,28 @@ const handleLogin = async () => {
     return
   }
 
-  const user = await login({
+  /**
+   * 调用登录接口
+   * ⚠️ 注意：因为 request.js 已经 return res.data
+   * 所以这里拿到的就是 { access, refresh }
+   */
+  const tokenData = await login({
     username: username.value,
     password: password.value
   })
 
-  // 当前系统只有普通用户
-  localStorage.setItem('user', JSON.stringify(user))
+  // ✅ 存 JWT（后续请求用）
+  localStorage.setItem('access_token', tokenData.access)
+  localStorage.setItem('refresh_token', tokenData.refresh)
+
+  // ✅ 保留你原有逻辑（系统目前只有普通用户）
+  localStorage.setItem(
+    'user',
+    JSON.stringify({
+      username: username.value
+    })
+  )
+
   router.push('/user/rooms')
 }
 </script>
-
