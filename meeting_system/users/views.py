@@ -23,7 +23,6 @@ def login_view(request):
     password = request.data.get("password")
 
     user = authenticate(username=username, password=password)
-    print(user)
     if not user:
         return Response({"code": 4001, "msg": "用户名或密码错误", "data": None})
 
@@ -35,6 +34,7 @@ def login_view(request):
             "code": 0,
             "msg": "ok",
             "data": {
+                "user_id": user.id,
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
             },

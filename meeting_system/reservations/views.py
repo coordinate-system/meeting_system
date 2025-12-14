@@ -22,7 +22,6 @@ def check_available_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 def create_reservation_view(request):
     """
     POST /api/reservations/create/
@@ -34,28 +33,14 @@ def create_reservation_view(request):
     return Response({"code": 0, "msg": "预约创建成功", "data": None})
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def my_reservations_view(request):
     """
-    GET /api/reservations/my/
+    POST /api/reservations/my/
     """
-    user_id = 1  # 通常从登录态中获取
-    print("get reservations for user:", user_id)
+    print("get reservations for user:", request.data.get("user_id"))
 
-    # ===== 数据库操作（暂时注释）=====
-    # records = get_user_reservations(user_id)
-
-    records = [
-        {
-            "id": 10,
-            "room_name": "第一会议室",
-            "date": "2025-06-01",
-            "time": "09:00-12:00",
-            "status": "PENDING",
-            "approve_time": None,
-            "reject_reason": None,
-        }
-    ]
+    records = get_user_reservations(request.data.get("user_id"))
 
     return Response({"code": 0, "msg": "ok", "data": records})
 
@@ -67,8 +52,7 @@ def cancel_reservation_view(request, res_id):
     """
     print("cancel reservation:", res_id)
 
-    # ===== 数据库操作（暂时注释）=====
-    # cancel_reservation(res_id)
+    cancel_reservation(res_id)
 
     return Response({"code": 0, "msg": "预约已取消", "data": None})
 
@@ -80,7 +64,6 @@ def confirm_use_view(request, res_id):
     """
     print("confirm use:", res_id)
 
-    # ===== 数据库操作（暂时注释）=====
-    # confirm_use(res_id)
+    confirm_use(res_id)
 
     return Response({"code": 0, "msg": "已确认使用会议室", "data": None})
