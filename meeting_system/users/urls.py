@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import login_view  # , UserInfoView
+from .views import login_view
 
 urlpatterns = [
     path("login/", login_view),
-    # path("me/", UserInfoView.as_view()),  # 需要 JWT
 ]
