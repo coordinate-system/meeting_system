@@ -1,5 +1,7 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from dao.reservations_dao import *
+from rest_framework.permissions import AllowAny
 
 
 @api_view(["POST"])
@@ -14,23 +16,20 @@ def check_available_view(request):
 
     print("check rooms:", date, start, end, people)
 
-    # ===== 数据库操作（暂时注释）=====
-    # rooms = filter_available_rooms(date, start, end, people)
-
-    rooms = [{"room_id": 1, "name": "第一会议室", "capacity": 20}]
+    rooms = filter_available_rooms(date, start, end, people)
 
     return Response({"code": 0, "msg": "ok", "data": rooms})
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def create_reservation_view(request):
     """
     POST /api/reservations/create/
     """
     print("create reservation:", request.data)
 
-    # ===== 数据库操作（暂时注释）=====
-    # create_reservation(request.data)
+    create_reservation(request.data)
 
     return Response({"code": 0, "msg": "预约创建成功", "data": None})
 
