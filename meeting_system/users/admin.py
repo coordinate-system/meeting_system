@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from .models import UserProfile
+# from .models import UserProfile
 
 
-@admin.register(UserProfile)
+# @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("id", "user")
     search_fields = ("user__username",)
