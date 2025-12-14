@@ -110,4 +110,4 @@ STATIC_URL = "static/"
 
 # 媒体文件 URL（上传的图片等）
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = BASE_DIR.parent / "media"
