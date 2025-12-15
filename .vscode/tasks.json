@@ -2,35 +2,55 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Backend: Django",
+            "label": "Start Backend (Django)",
             "type": "shell",
-            "command": ".\\.venv\\Scripts\\python.exe meeting_system\\manage.py runserver",
-            "presentation": {
-                "panel": "new",
-                "group": "backend"
+            // 针对 Windows 系统的 Python 路径
+            "windows": {
+                "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe manage.py runserver"
             },
-            "problemMatcher": []
+            // 针对 Linux/macOS 系统的 Python 路径
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python manage.py runserver"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/.venv/bin/python manage.py runserver"
+            },
+            "options": {
+                // 设置后端命令执行的工作目录
+                "cwd": "${workspaceFolder}/meeting_system"
+            },
+            "presentation": {
+                "reveal": "always",
+                "group": "servers"
+            },
+            "problemMatcher": [] // 防止 VS Code 提示"任务正在后台运行"
         },
         {
-            "label": "Frontend: Vite",
+            "label": "Start Frontend (npm)",
             "type": "shell",
             "command": "npm run dev",
             "options": {
-                "cwd": "frontend/meeting-frontend"
+                // 设置前端命令执行的工作目录
+                "cwd": "${workspaceFolder}/frontend/meeting-frontend"
             },
             "presentation": {
-                "panel": "new",
-                "group": "frontend"
+                "reveal": "always",
+                "group": "servers"
             },
             "problemMatcher": []
         },
         {
-            "label": "Run All",
+            "label": "Run Full Stack Project",
+            // 依赖上面两个任务，实现并行运行
             "dependsOn": [
-                "Backend: Django",
-                "Frontend: Vite"
+                "Start Backend (Django)",
+                "Start Frontend (npm)"
             ],
-            "dependsOrder": "parallel"
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
