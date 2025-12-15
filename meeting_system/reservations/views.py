@@ -171,7 +171,7 @@ def create_reservation_view(request):
         return Response({"code": 500, "msg": "系统错误", "data": None})
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 def my_reservations_view(request):
     user = request.user
 
