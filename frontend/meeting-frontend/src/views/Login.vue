@@ -74,30 +74,26 @@ const handleLogin = async () => {
   errorMessage.value = ''
 
   try {
+    // login() 直接返回 { access, refresh }
     const res = await login(form)
-    // 模拟测试（如果没有后端，解开下面一行）
-    // const res = { data: { code: 0, data: { access: 'token' } } }; await new Promise(r=>setTimeout(r,800));
 
-    const responseData = res.data || res 
+    // res 就是后端 data
+    localStorage.setItem('token', res.access)
+    localStorage.setItem('refresh', res.refresh)
+    localStorage.setItem('username', form.username)
 
-    if (responseData.code === 0) {
-      localStorage.setItem('token', responseData.data.access)
-      localStorage.setItem('username', form.username)
-
-      if (form.username === 'admin') {
-        router.push('/admin') 
-      } else {
-        router.push('/user')
-      }
+    if (form.username === 'admin') {
+      router.push('/admin')
     } else {
-      errorMessage.value = responseData.msg || '账号或密码错误'
+      router.push('/user')
     }
   } catch (error) {
-    errorMessage.value = '服务器连接失败'
+    errorMessage.value = error.msg || '账号或密码错误'
   } finally {
     isLoading.value = false
   }
 }
+
 </script>
 
 <style scoped>
