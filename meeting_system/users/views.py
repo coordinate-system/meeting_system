@@ -17,6 +17,8 @@ def login_view(request):
     user = authenticate(username=username, password=password)
     if not user:
         return Response({"code": 404, "msg": "用户名或密码错误", "data": None})
+    if user.is_staff:
+        return Response({"code": 403, "msg": "管理员账户禁止登录", "data": None})
 
     # 生成 JWT
     refresh = RefreshToken.for_user(user)
