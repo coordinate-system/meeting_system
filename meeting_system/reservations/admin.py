@@ -24,6 +24,7 @@ class ReservationAdminForm(forms.ModelForm):
         start = cleaned_data.get("start_hour")
         end = cleaned_data.get("end_hour")
         status = cleaned_data.get("status")
+        reject_reason = cleaned_data.get("reject_reason")
 
         if not all([room, date, start is not None, end is not None]):
             return cleaned_data
@@ -69,10 +70,10 @@ class ReservationAdminForm(forms.ModelForm):
         if conflict_qs.exists():
             c = conflict_qs.first()
             raise ValidationError(
-                f"时间冲突：{c.user.username} " f"{c.start_hour}:00-{c.end_hour}:00"
+                f"时间冲突：{c.user.username} {c.start_hour}:00-{c.end_hour}:00"
             )
 
-        # ---- 状态流转校验 ----
+        # ================== 状态流转校验 ==================
         if self.instance.pk:
             old_status = self.instance.status
             allowed = {
@@ -86,11 +87,15 @@ class ReservationAdminForm(forms.ModelForm):
             if status != old_status and status not in allowed.get(old_status, []):
                 raise ValidationError(f"非法状态流转：{old_status} → {status}")
 
-            # 驳回必须填写理由
-            if status == "REJECTED" and not cleaned_data.get("reject_reason"):
-                raise ValidationError("驳回预约必须填写驳回理由")
+            # ---- 驳回理由规则（编辑）----
+            if status == "REJECTED":
+                if not reject_reason:
+                    raise ValidationError("驳回预约必须填写驳回理由")
+            else:
+                # 非 REJECTED 状态，自动清空驳回理由
+                cleaned_data["reject_reason"] = ""
 
-            # USED 必须在会议时间前后 1 小时
+            # ---- USED 时间限制 ----
             if status == "USED":
                 start_dt = timezone.make_aware(
                     datetime.combine(date, datetime.min.time())
@@ -99,16 +104,16 @@ class ReservationAdminForm(forms.ModelForm):
                 if abs((now - start_dt).total_seconds()) > 3600:
                     raise ValidationError("不在允许确认使用的时间范围内")
 
-        request = self.initial.get("request")  # admin 中注入，见下文 save_model
-        # ===== 管理员创建预约时的状态校验 =====
-        if not self.instance.pk:  # 新建预约
+        # ================== 新建预约校验 ==================
+        if not self.instance.pk:
             if status not in ["PENDING", "APPROVED"]:
                 raise ValidationError(
                     "管理员创建预约时，状态只能是「审核中」或「已通过」"
                 )
 
-            # 不能直接创建为 APPROVED + 已过期
-            today = timezone.localdate()
+            if reject_reason:
+                raise ValidationError("创建预约时不能填写驳回理由")
+
             if status == "APPROVED" and date < today:
                 raise ValidationError("不能为已过期的时间创建“已通过”的预约")
 

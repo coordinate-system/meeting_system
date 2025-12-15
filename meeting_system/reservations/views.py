@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -50,25 +50,15 @@ def check_room_conflict(room_id: int, date: str, start: int, end: int) -> bool:
 
 
 def filter_available_rooms(date: str, start: int, end: int, people: int):
-    """筛选可用会议室"""
-    # 1. 初筛：容量足够 且 状态为开放 的会议室
-    # 引用原始逻辑
+    """筛选可用会议室（返回完整 MeetingRoom 对象）"""
     candidates = MeetingRoom.objects.filter(capacity__gte=people, is_available=True)
 
     available_rooms = []
 
-    # 2. 遍历检查每个会议室在指定时间段是否有冲突
     for room in candidates:
         if not check_room_conflict(room.id, date, start, end):
-            available_rooms.append(
-                {
-                    "id": room.id,
-                    "name": room.name,
-                    "capacity": room.capacity,
-                    "usage": room.usage,
-                    "photo": room.photo,  # 假设 Model 有 photo 字段，前端可能需要
-                }
-            )
+            available_rooms.append(room)
+
     return available_rooms
 
 
