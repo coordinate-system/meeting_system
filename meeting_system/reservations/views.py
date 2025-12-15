@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from reservations.models import Reservation
 
 from rooms.models import MeetingRoom
+from rooms.serializers import MeetingRoomSerializer
 
 
 def validate_date_and_time(reserve_date, start_hour, end_hour):
@@ -92,8 +93,9 @@ def check_available_view(request):
         validate_date_and_time(reserve_date, start, end)
 
         rooms = filter_available_rooms(reserve_date, start, end, people)
+        serializer = MeetingRoomSerializer(rooms, many=True).data
 
-        return Response({"code": 0, "msg": "ok", "data": rooms})
+        return Response({"code": 0, "msg": "ok", "data": serializer})
 
     except ValueError as e:
         return Response({"code": 400, "msg": str(e), "data": None})
