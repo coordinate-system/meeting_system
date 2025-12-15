@@ -78,8 +78,8 @@ const handleLogin = async () => {
     const res = await login(form)
 
     // res 就是后端 data
-    localStorage.setItem('token', res.access)
-    localStorage.setItem('refresh', res.refresh)
+    localStorage.setItem('access_token', res.access)
+    localStorage.setItem('refresh_token', res.refresh)
     localStorage.setItem('username', form.username)
 
     if (form.username === 'admin') {
