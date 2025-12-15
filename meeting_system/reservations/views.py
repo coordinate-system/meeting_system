@@ -112,7 +112,7 @@ def create_reservation_view(request):
         user = request.user
         data = request.data
 
-        required = ["room_id", "date", "start_hour", "end_hour", "topic", "people"]
+        required = ["room_id", "date", "start_hour", "end_hour", "people"]
         for f in required:
             if not data.get(f):
                 return Response({"code": 400, "msg": f"缺少参数: {f}", "data": None})
@@ -183,6 +183,7 @@ def my_reservations_view(request):
             "room": str(r.room),
             "date": r.date,
             "time": f"{r.start_hour}:00 - {r.end_hour}:00",
+            "topic": r.topic,
             "status": r.status,
             "approve_time": r.approve_time,
             "reject_reason": r.reject_reason,
