@@ -14,7 +14,10 @@
         {
             "label": "Frontend: Vite",
             "type": "shell",
-            "command": "cd frontend\\meeting-frontend && npm run dev",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "frontend/meeting-frontend"
+            },
             "presentation": {
                 "panel": "new",
                 "group": "frontend"
