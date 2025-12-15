@@ -4,12 +4,7 @@
         {
             "label": "Backend: Django",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-NoExit",
-                "-Command",
-                "cd meeting_system; ../.venv/Scripts/Activate.ps1; python manage.py runserver"
-            ],
+            "command": ".\\.venv\\Scripts\\python.exe meeting_system\\manage.py runserver",
             "presentation": {
                 "panel": "new",
                 "group": "backend"
@@ -19,12 +14,7 @@
         {
             "label": "Frontend: Vite",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-NoExit",
-                "-Command",
-                "cd frontend/meeting-frontend; npm run dev"
-            ],
+            "command": "cd frontend\\meeting-frontend && npm run dev",
             "presentation": {
                 "panel": "new",
                 "group": "frontend"
@@ -37,10 +27,7 @@
                 "Backend: Django",
                 "Frontend: Vite"
             ],
-            "dependsOrder": "parallel",
-            "problemMatcher": [
-                "$python"
-            ]
+            "dependsOrder": "parallel"
         }
     ]
 }
