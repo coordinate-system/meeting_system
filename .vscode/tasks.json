@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Backend: Django",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoExit",
+                "-Command",
+                "cd meeting_system; ../.venv/Scripts/Activate.ps1; python manage.py runserver"
+            ],
+            "presentation": {
+                "panel": "new",
+                "group": "backend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Frontend: Vite",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoExit",
+                "-Command",
+                "cd frontend/meeting-frontend; npm run dev"
+            ],
+            "presentation": {
+                "panel": "new",
+                "group": "frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run All",
+            "dependsOn": [
+                "Backend: Django",
+                "Frontend: Vite"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": [
+                "$python"
+            ]
+        }
+    ]
+}
