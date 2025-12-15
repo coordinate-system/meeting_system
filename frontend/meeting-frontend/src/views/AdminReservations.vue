@@ -22,7 +22,7 @@
       </p>
 
       <p v-if="res.approve_time">
-        审批时间：{{ res.approve_time }}
+        审批时间：{{ $formatTime(res.approve_time) }}
       </p>
 
       <p v-if="res.reject_reason" style="color: red">

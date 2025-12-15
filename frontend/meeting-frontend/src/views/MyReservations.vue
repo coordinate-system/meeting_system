@@ -21,7 +21,7 @@
       </p>
 
       <p v-if="res.approve_time">
-        审批时间：{{ res.approve_time }}
+        审批时间：{{ $formatTime(res.approve_time) }}
       </p>
 
       <p v-if="res.reject_reason" style="color: red">
@@ -40,7 +40,7 @@
         <button
           v-if="canConfirmUse(res)"
           style="margin-left: 10px"
-          @click="confirmUse(res)"
+          @click="confirm (res)"
         >
           确认使用
         </button>
