@@ -1,58 +1,167 @@
 <template>
-  <div style="padding: 40px">
-    <h2>会议室预约系统登录</h2>
-
-    <div>
-      <input v-model="username" placeholder="用户名" />
+  <!-- 
+    核心修改：删除了 .login-card 容器
+    现在 .login-container 直接包含左右两个部分 
+  -->
+  <div class="login-container">
+    <!-- 左侧：插画区域 -->
+    <!-- 使用 :style 绑定背景图，这是最可靠的方式 -->
+    <div 
+      class="illustration-side"
+      :style="{ backgroundImage: `url(${bgImg})` }"
+    >
     </div>
 
-    <div style="margin-top: 10px">
-      <input v-model="password" type="password" placeholder="密码" />
-    </div>
+    <!-- 右侧：表单区域 -->
+    <div class="form-side">
+      <div class="form-content">
+        <h2 class="form-title">登录</h2>
+        
+        <form @submit.prevent="handleLogin">
+          <!-- 账号输入 -->
+          <div class="input-group">
+            <label>账号</label>
+            <input 
+              type="text" 
+              v-model="form.username" 
+              required 
+            />
+          </div>
 
-    <div style="margin-top: 20px">
-      <button @click="handleLogin">登录</button>
+          <!-- 密码输入 -->
+          <div class="input-group">
+            <label>密码</label>
+            <input 
+              type="password" 
+              v-model="form.password" 
+              required 
+            />
+          </div>
+
+          <!-- 错误提示 -->
+          <div v-if="errorMessage" class="error-text">
+            {{ errorMessage }}
+          </div>
+
+          <!-- 登录按钮 -->
+          <button type="submit" :disabled="isLoading">
+            {{ isLoading ? '登录中...' : '登录' }}
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { login } from '@/api/auth'
+import { login } from '@/api/auth' 
+import bgImg from '@/assets/rooms/loginph.jpg' 
 
-const username = ref('')
-const password = ref('')
 const router = useRouter()
 
+const form = reactive({
+  username: '',
+  password: ''
+})
+
+const isLoading = ref(false)
+const errorMessage = ref('')
+
 const handleLogin = async () => {
-  if (!username.value || !password.value) {
-    alert('请输入用户名和密码')
-    return
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    const res = await login(form)
+    // 模拟测试（如果没有后端，解开下面一行）
+    // const res = { data: { code: 0, data: { access: 'token' } } }; await new Promise(r=>setTimeout(r,800));
+
+    const responseData = res.data || res 
+
+    if (responseData.code === 0) {
+      localStorage.setItem('token', responseData.data.access)
+      localStorage.setItem('username', form.username)
+
+      if (form.username === 'admin') {
+        router.push('/admin') 
+      } else {
+        router.push('/user')
+      }
+    } else {
+      errorMessage.value = responseData.msg || '账号或密码错误'
+    }
+  } catch (error) {
+    errorMessage.value = '服务器连接失败'
+  } finally {
+    isLoading.value = false
   }
-
-  /**
-   * 调用登录接口
-   * ⚠️ 注意：因为 request.js 已经 return res.data
-   * 所以这里拿到的就是 { access, refresh }
-   */
-  const tokenData = await login({
-    username: username.value,
-    password: password.value
-  })
-
-  // ✅ 存 JWT（后续请求用）
-  localStorage.setItem('access_token', tokenData.access)
-  localStorage.setItem('refresh_token', tokenData.refresh)
-
-  // ✅ 保留你原有逻辑（系统目前只有普通用户）
-  localStorage.setItem(
-    'user',
-    JSON.stringify({
-      username: username.value
-    })
-  )
-
-  router.push('/user/rooms')
 }
 </script>
+
+<style scoped>
+/* 1. 全局容器现在是主布局，而不是背景板 */
+.login-container {
+  display: flex; /* 改为 flex 布局，让左右两边并排 */
+  min-height: 100vh;
+  width: 100%;
+  background-color: #fff; /* 给个白色底色，以防图片加载失败 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 2. 卡片样式 (.login-card) -> 已被删除，所以这个 CSS 规则也删掉 */
+
+
+/* 3. 左侧插画区 */
+.illustration-side {
+  width: 58%; /* 使用百分比，更具弹性 */
+  height: 100vh; /* 高度占满整个视口 */
+  /* background-image 属性已由 :style 接管，这里可以删除 */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  /* 平滑的渐变遮罩，模拟 B 站效果 */
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+/* 4. 右侧表单区 */
+.form-side {
+  flex: 1; /* 自动占据剩余空间 */
+  height: 100vh; /* 高度同样占满整个视口 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+}
+
+.form-content {
+  width: 100%;
+  max-width: 320px; /* 表单内容的最大宽度 */
+}
+
+/* 其他表单内部样式保持不变 */
+.form-title{text-align:center;font-size:24px;color:#555;font-weight:500;margin-bottom:40px;letter-spacing:2px}
+.input-group{margin-bottom:25px}
+.input-group label{display:block;font-size:12px;color:#999;margin-bottom:8px;padding-left:5px}
+.input-group input{width:100%;height:44px;border:1px solid #e7e7e7;border-radius:22px;padding:0 20px;font-size:14px;outline:none;transition:all .3s;box-sizing:border-box}
+.input-group input:focus{border-color:#40485b}
+button{width:100%;height:44px;background-color:#3f4d63;color:#fff;border:none;border-radius:22px;font-size:16px;cursor:pointer;margin-top:10px;transition:opacity .2s}
+button:hover{opacity:.9}
+button:disabled{background-color:#ccc;cursor:not-allowed}
+.error-text{color:#ff4d4f;font-size:12px;margin-bottom:10px;text-align:center}
+
+
+/* 5. 媒体查询 (适配小屏幕) */
+@media (max-width: 900px) {
+  /* 在手机上，隐藏图片，让表单区占满整个屏幕 */
+  .illustration-side {
+    display: none;
+  }
+  .form-side {
+    width: 100%;
+    padding: 0 20px; /* 调整内边距 */
+  }
+}
+</style>
