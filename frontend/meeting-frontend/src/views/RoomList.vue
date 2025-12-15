@@ -15,15 +15,13 @@
 
       <p>
         状态：
-        <span v-if="room.is_available" style="color: green">
-          可预约
-        </span>
-        <span v-else style="color: red">
-          不可预约
-        </span>
+        <span v-if="room.is_available" style="color: green">可预约</span>
+        <span v-else style="color: red">不可预约</span>
       </p>
 
+      <!-- ✅ 有图片才显示 -->
       <img
+        v-if="room.photo"
         :src="room.photo"
         alt="会议室图片"
         style="width: 200px; margin-top: 10px"
@@ -42,4 +40,3 @@ onMounted(async () => {
   rooms.value = await getRooms()
 })
 </script>
-

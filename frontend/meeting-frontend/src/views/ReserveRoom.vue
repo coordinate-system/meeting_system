@@ -77,10 +77,11 @@ const goConfirm = room => {
   router.push({
     path: '/reserve/confirm',
     query: {
-      roomId: room.room_id,
+      roomId: room.id,
       date: date.value,
       start: startHour.value,
-      end: endHour.value
+      end: endHour.value,
+      people: people.value
     }
   })
 }

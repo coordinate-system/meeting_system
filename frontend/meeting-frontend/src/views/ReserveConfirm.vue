@@ -5,6 +5,7 @@
     <p>会议室ID：{{ roomId }}</p>
     <p>日期：{{ date }}</p>
     <p>时间：{{ start }}:00 - {{ end }}:00</p>
+    <p>参会人数：{{ people }} 人</p>
 
     <div style="margin-top: 20px">
       <label>会议主题：</label>
@@ -25,14 +26,21 @@ import { createReservation } from '@/api/reservations'
 const route = useRoute()
 const router = useRouter()
 
+// ⚠️ query 里的值全是字符串，必要的转成 Number
+const roomId = ref(Number(route.query.roomId))
+const date = ref(route.query.date)
+const start = ref(Number(route.query.start))
+const end = ref(Number(route.query.end))
+const people = ref(Number(route.query.people)) 
 const topic = ref('')
 
 const submit = async () => {
   await createReservation({
-    room_id: route.query.roomId,
-    date: route.query.date,
-    start_hour: route.query.start,
-    end_hour: route.query.end,
+    room_id: roomId.value,
+    date: date.value,
+    start_hour: start.value,
+    end_hour: end.value,
+    people: people.value,
     topic: topic.value
   })
 
@@ -40,5 +48,3 @@ const submit = async () => {
   router.push('/user/my')
 }
 </script>
-
-

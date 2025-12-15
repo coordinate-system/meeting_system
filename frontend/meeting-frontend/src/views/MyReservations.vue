@@ -63,8 +63,54 @@ onMounted(async () => {
   reservations.value = await getMyReservations()
 })
 
+/* ---------- 状态显示 ---------- */
+
+// 状态文字
+const statusText = status => {
+  switch (status) {
+    case 'PENDING':
+      return '待审批'
+    case 'APPROVED':
+      return '已批准'
+    case 'REJECTED':
+      return '已驳回'
+    case 'CANCELED':
+      return '已取消'
+    case 'USED':
+      return '已使用'
+    default:
+      return status
+  }
+}
+
+// 状态颜色
+const statusColor = status => {
+  switch (status) {
+    case 'PENDING':
+      return 'orange'
+    case 'APPROVED':
+      return 'green'
+    case 'REJECTED':
+      return 'red'
+    case 'CANCELED':
+      return 'gray'
+    case 'USED':
+      return 'blue'
+    default:
+      return 'black'
+  }
+}
+
+/* ---------- 按钮控制 ---------- */
+
 const canCancel = status =>
   status === 'PENDING' || status === 'APPROVED'
+
+// 只有“已批准”且未确认使用的才能确认
+const canConfirmUse = res =>
+  res.status === 'APPROVED'
+
+/* ---------- 操作 ---------- */
 
 const cancel = async res => {
   await cancelReservation(res.id)
@@ -76,4 +122,5 @@ const confirm = async res => {
   res.status = 'USED'
 }
 </script>
+
 
