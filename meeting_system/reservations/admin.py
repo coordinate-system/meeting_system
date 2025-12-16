@@ -33,28 +33,25 @@ class ReservationAdminForm(forms.ModelForm):
         now = timezone.localtime()
 
         # ---- 时间合法性 ----
-        if start < 0 or end > 24:
-            raise ValidationError("时间必须在 0-24 点之间")
+        if start < 0 or end > 23:
+            raise ValidationError("时间必须在 0-23 点之间")
 
         if start >= end:
             raise ValidationError("结束时间必须晚于开始时间")
 
-        if date < today:
-            raise ValidationError("预约日期不能早于今天")
-
-        if date == today and start < now.hour:
-            raise ValidationError("当天预约开始时间不能早于当前时间")
+        if date < today or (date == today and start < now.hour):
+            raise ValidationError("不能创建/修改已过期的条目")
 
         # ---- 会议室状态 ----
         if not room.is_available:
             raise ValidationError("该会议室当前不可预约")
 
         # ---- USED / APPROVED 禁止改时间 ----
-        if self.instance.pk:
-            old = Reservation.objects.get(pk=self.instance.pk)
-            if old.status in ["APPROVED", "USED"]:
-                if old.start_hour != start or old.end_hour != end or old.date != date:
-                    raise ValidationError("已审批或已使用的预约禁止修改时间")
+        # if self.instance.pk:
+        #     old = Reservation.objects.get(pk=self.instance.pk)
+        #     if old.status in ["APPROVED", "USED"]:
+        #         if old.start_hour != start or old.end_hour != end or old.date != date:
+        #             raise ValidationError("已审批或已使用的预约禁止修改时间")
 
         # ---- 时间冲突检查 ----
         conflict_qs = (
@@ -96,13 +93,13 @@ class ReservationAdminForm(forms.ModelForm):
                 cleaned_data["reject_reason"] = ""
 
             # ---- USED 时间限制 ----
-            if status == "USED":
-                start_dt = timezone.make_aware(
-                    datetime.combine(date, datetime.min.time())
-                ) + timedelta(hours=start)
+            # if status == "USED":
+            #     start_dt = timezone.make_aware(
+            #         datetime.combine(date, datetime.min.time())
+            #     ) + timedelta(hours=start)
 
-                if abs((now - start_dt).total_seconds()) > 3600:
-                    raise ValidationError("不在允许确认使用的时间范围内")
+            #     if abs((now - start_dt).total_seconds()) > 3600:
+            #         raise ValidationError("不在允许确认使用的时间范围内")
 
         # ================== 新建预约校验 ==================
         if not self.instance.pk:
@@ -113,9 +110,6 @@ class ReservationAdminForm(forms.ModelForm):
 
             if reject_reason:
                 raise ValidationError("创建预约时不能填写驳回理由")
-
-            if status == "APPROVED" and date < today:
-                raise ValidationError("不能为已过期的时间创建“已通过”的预约")
 
         return cleaned_data
 
