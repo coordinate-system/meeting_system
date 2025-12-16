@@ -13,7 +13,7 @@
       :class="statusClass(res.status)"
     >
       <div class="card-header">
-        <h3 class="room-name">{{ res.room_name }}</h3>
+        <h3 class="room-name">{{ res.room }}</h3>
         <span class="status-tag" :style="{ backgroundColor: statusColor(res.status) }">
           {{ statusText(res.status) }}
         </span>
@@ -30,7 +30,7 @@
           <span class="label">预定时间：</span>
           <span>{{ res.time }}</span>
         </div>
-        <div class="info-item">
+        <div v-if="res.topic" class="info-item">
           <span class="icon">📝</span>
           <span class="label">会议主题：</span>
           <span>{{ res.topic }}</span>

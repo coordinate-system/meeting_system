@@ -9,10 +9,7 @@ import ReserveRoom from '@/views/ReserveRoom.vue'
 import ReserveConfirm from '@/views/ReserveConfirm.vue'
 import MyReservations from '@/views/MyReservations.vue'
 
-// ===== 管理员端 =====
-import AdminHome from '@/views/AdminHome.vue'
-import AdminReservations from '@/views/AdminReservations.vue'
-import AdminRooms from '@/views/AdminRooms.vue'
+
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -36,12 +33,10 @@ const routes = [
   // ===== 管理员 =====
   {
     path: '/admin',
-    component: AdminHome,
-    redirect: '/admin/reservations',
-    children: [
-      { path: 'reservations', component: AdminReservations },
-      { path: 'rooms', component: AdminRooms }
-    ]
+    beforeEnter: (to, from, next) => {
+      // 直接跳转到 Django 后台
+      window.location.href = 'http://127.0.0.1:8000/admin'
+    }
   }
 ]
 

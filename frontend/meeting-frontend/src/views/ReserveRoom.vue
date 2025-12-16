@@ -53,7 +53,7 @@
         <h3 class="results-title">可预约会议室</h3>
         <div v-for="room in filteredRooms" :key="room.id" class="room-item-card">
           <div class="room-info">
-            <h4 class="room-name">{{ room.name }} ({{ room.room_no }})</h4>
+            <h4 class="room-name">{{ room.name }}<span v-if="room.room_no">({{ room.room_no }})</span></h4>
             <p class="room-capacity">可容纳 {{ room.capacity }} 人</p>
           </div>
           <button class="reserve-button" @click="goConfirm(room)">立即预约</button>
@@ -74,7 +74,7 @@ const date = ref('')
 const startHour = ref(9)
 const endHour = ref(10)
 const people = ref(1)
-const hours = Array.from({ length: 12 }, (_, i) => i + 8)
+const hours = Array.from({ length: 15 }, (_, i) => i + 8)
 const filteredRooms = ref([])
 
 const searchRooms = async () => {
@@ -221,10 +221,7 @@ select.grouped-input {
 }
 
 
-/* --- 其他样式 (保持不变) --- */
-.search-button, .reserve-button, .divider, .results-title, .room-item-card, .room-name, .room-capacity {
-  /* ... (此处省略未改动的样式代码) ... */
-}
+/* 搜索按钮样式 */
 .search-button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; cursor: pointer; transition: background-color 0.3s; }
 .search-button:hover { background-color: #0056b3; }
 .divider { border: none; border-top: 1px solid #eee; margin: 30px 0; }
