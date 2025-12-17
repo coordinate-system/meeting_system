@@ -234,10 +234,10 @@ def confirm_use_view(request, res_id):
         ) + timezone.timedelta(hours=r.start_hour)
 
         # 允许前后 1 小时
-        if abs((now - start_time).total_seconds()) > 3600:
-            return Response(
-                {"code": 400, "msg": "不在允许确认使用的时间范围内", "data": None}
-            )
+        # if abs((now - start_time).total_seconds()) > 3600:
+        #     return Response(
+        #         {"code": 400, "msg": "不在允许确认使用的时间范围内", "data": None}
+        #     )
 
         r.status = "USED"
         r.save()
