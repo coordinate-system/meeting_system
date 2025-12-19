@@ -122,28 +122,7 @@ const statusClass = status => {
 const canCancel = status =>
   status === 'PENDING' || status === 'APPROVED'
 
-const canConfirmUse = res => {
-  // 1. 状态必须是已批准
-  if (res.status !== 'APPROVED') return false
-
-  // 2. 解析预约日期和时间段
-  if (!res.date || !res.time) return false
-
-  const [startTime, endTime] = res.time.split('-')
-
-  // 拼成完整时间字符串
-  const startDateTime = new Date(`${res.date} ${startTime}`)
-  const endDateTime = new Date(`${res.date} ${endTime}`)
-
-  // 3. 计算允许确认的时间窗口
-  const allowStart = new Date(startDateTime.getTime() - 60 * 60 * 1000) // 开始前1小时
-  const allowEnd = new Date(endDateTime.getTime() + 60 * 60 * 1000)     // 结束后1小时
-
-  const now = new Date()
-
-  // 4. 判断当前时间是否在窗口内
-  return now >= allowStart && now <= allowEnd
-}
+const canConfirmUse = res => res.status === 'APPROVED'
 
 
 /* ---------- 操作 ---------- */
